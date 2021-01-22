@@ -1,0 +1,4 @@
+Node,Seq
+0,AAAA
+2,GACA
+1,ACTA

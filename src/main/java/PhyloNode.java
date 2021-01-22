@@ -13,10 +13,11 @@ public class PhyloNode implements Comparable<PhyloNode>{
     Set<String> seq_ids;
     DNASequence seq;
     public LinkedList<PhyloNode> parents;
+    public HashSet<Integer> ref_diffs;
     public int dist_ref;
     public int dist_closest;
 
-    public PhyloNode(String id, DNASequence seq, int dist_ref) {
+    public PhyloNode(String id, DNASequence seq, int dist_ref, HashSet<Integer> ref_diffs) {
         seq_ids = new HashSet<>();
         seq_ids.add(id);
         this.id = ++max_id;
@@ -24,6 +25,7 @@ public class PhyloNode implements Comparable<PhyloNode>{
         this.dist_ref = dist_ref;
         this.dist_closest = dist_ref;
         this.parents = new LinkedList<PhyloNode>();
+        this.ref_diffs = ref_diffs;
     }
 
     public PhyloNode(PhyloNode n) {

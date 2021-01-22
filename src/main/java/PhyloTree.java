@@ -26,12 +26,13 @@ public class PhyloTree {
         this.var_pos = var_pos;
     }
 
-    public void buildPhylo(Map<Integer, Set<String>> h_dist_map,
+    public void buildPhylo(Map<Integer, Set<String>> h_dist_map, 
+                           Map<String, HashSet<Integer>> ref_diff_positions,
                            LinkedHashMap<String, DNASequence> seqs,
                            String ref_id, DNASequence ref_seq, boolean multiple_parents) {
 
         //Create root node from reference sequence
-        PhyloNode root = new PhyloNode(ref_id, ref_seq, 0);
+        PhyloNode root = new PhyloNode(ref_id, ref_seq, 0, new HashSet<Integer>());
         nodes.add(root);
 
         //Create nodes for all sequences in order of distance to root
@@ -44,7 +45,11 @@ public class PhyloTree {
             System.out.println(String.format("Creating nodes with dist=%d to root. There are %d such sequences.", distance_key, h_dist_map.get(distance_key).size()));
             Set<String> seq_ids = h_dist_map.get(distance_key);
             for (String id : seq_ids) {
-                nodes.add(makeNode(id, seqs.get(id), Integer.parseInt(distance_key.toString())));
+                HashSet<Integer> ref_diffs = ref_diff_positions.get(id);
+                nodes.add(makeNode(id, 
+                                   seqs.get(id),
+                                   Integer.parseInt(distance_key.toString()),
+                                   ref_diffs));
             }
         }
 
@@ -96,9 +101,9 @@ public class PhyloTree {
 
 
 
-    private PhyloNode makeNode(String seq_name, DNASequence seq, int h_dist_ref) 
+    private PhyloNode makeNode(String seq_name, DNASequence seq, int h_dist_ref, HashSet<Integer> ref_diffs) 
     {
-        PhyloNode n = new PhyloNode(seq_name, seq, h_dist_ref);
+        PhyloNode n = new PhyloNode(seq_name, seq, h_dist_ref, ref_diffs);
         return n;
     }
 
@@ -112,21 +117,20 @@ public class PhyloTree {
         for(int i = g.vertexSet().size()-1; i >= 0; i--) {
 
             PhyloNode candidate = (PhyloNode) g.vertexSet().toArray()[i];
-
             if (candidate.asInt() == x.asInt()) continue;
 
-            int distance_to_candidate = SeqAlgs.hamDist(var_pos, x.seq, candidate.seq);
-            int distance_to_current_parent = SeqAlgs.hamDist(var_pos, x.parents.getFirst().seq, x.seq);
+            int distance_to_candidate = SeqAlgs.hamDistOnIntersection(x, candidate);
+            int distance_to_current_parent = SeqAlgs.hamDistOnIntersection(x.parents.getFirst(), x);
 
             if(distance_to_candidate == 0) {
                 collapseNodeToParent(x, candidate);
                 return true;
             }
 
+            //Constrains multi-parent search to same distance from ref
             if (max_dist_ref != -99 && candidate.dist_ref != max_dist_ref) {
                 return false;
             }
-            
 
             if (candidate.dist_ref + distance_to_candidate == x.dist_ref && candidate.asInt() != 0) {
                 if (distance_to_candidate < distance_to_current_parent)
@@ -152,7 +156,7 @@ public class PhyloTree {
             LinkedList<Integer> changedPositions = fillGapsFromParent(target, source);
         }
         Set<Pair<Integer, Character>> mutations = SeqAlgs.findMutations(var_pos, source.seq, target.seq);
-        System.out.println("Adding edge from " + source + " to " + target);
+       System.out.println("Adding edge from " + source + " to " + target);
         System.out.println(mutations.size() + " mutations.");
         g.addEdge(source, target, new PhyloEdge(mutations));
     }
@@ -191,7 +195,7 @@ public class PhyloTree {
             node.seq = new DNASequence(new String(node_seq));
         } catch (CompoundNotFoundException e) {e.printStackTrace();}
         
-        System.out.println(changedPositions.size() + " changed positions.");
+        System.out.println(changedPositions.size() + " gap positions filled.");
         return changedPositions;
     }
 

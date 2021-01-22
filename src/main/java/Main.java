@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 
+import javafx.util.Pair;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -52,16 +53,20 @@ public class Main implements Runnable {
 
             LinkedList<Integer> variable_positions = SeqPreproc.getVariablePositions(seqs, ref.getValue());
 
-            System.out.println("Making distance map");
+            System.out.println("Getting distance from reference...");
 
-            Map<Integer,Set<String>> h_dist_map = SeqPreproc.getHamDistToRef(
+            Pair<Map<Integer, Set<String>>, Map<String, HashSet<Integer>>> p = SeqPreproc.getHamDistToRef(
                     ref_map.entrySet().iterator().next().getValue(),
                     seqs, variable_positions);
+
+            Map<Integer,Set<String>> h_dist_map = p.getKey();
+            Map<String, HashSet<Integer>> ref_diff_positions = p.getValue(); 
 
             System.out.println("Building tree...");
 
             PhyloTree g = new PhyloTree(variable_positions);
-            g.buildPhylo(h_dist_map, seqs, ref.getKey(), ref.getValue(), multiple_parents);
+
+            g.buildPhylo(h_dist_map, ref_diff_positions, seqs, ref.getKey(), ref.getValue(), multiple_parents);
 
             System.out.println("Saving output...");
             

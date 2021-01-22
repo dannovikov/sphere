@@ -1,0 +1,3 @@
+Node,Seq
+0,ACTG
+1,GTCA

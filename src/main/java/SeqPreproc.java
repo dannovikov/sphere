@@ -1,3 +1,4 @@
+import javafx.util.Pair;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
 import org.biojava.nbio.core.sequence.DNASequence;
 
@@ -84,17 +85,21 @@ public class SeqPreproc {
 
 
 
-    public static Map<Integer, Set<String>> getHamDistToRef(DNASequence ref, LinkedHashMap<String,DNASequence> seqs,
+    public static Pair<Map<Integer, Set<String>>, Map<String, HashSet<Integer>>> getHamDistToRef(DNASequence ref, LinkedHashMap<String,DNASequence> seqs,
                                                             LinkedList<Integer> var_pos) {
         Map<Integer, Set<String>> h_dist_map = new HashMap<>();
+        Map<String, HashSet<Integer>> ref_diff_positions = new HashMap<>();
+
         for (Map.Entry<String, DNASequence> entry : seqs.entrySet()) {
-            int h_dist = SeqAlgs.hamDist(var_pos, ref, entry.getValue());
+            //int h_dist = SeqAlgs.hamDist(var_pos, ref, entry.getValue());
+            HashSet<Integer> diffs = SeqAlgs.hamDistWithPositions(ref, entry.getValue());
+            int h_dist = diffs.size();
             if (!h_dist_map.containsKey(h_dist)) {
                 h_dist_map.put(h_dist, new HashSet<>());
             }
             h_dist_map.get(h_dist).add(entry.getKey());
+            ref_diff_positions.put(entry.getKey(), diffs);
         }
-
-        return h_dist_map;
+        return new Pair<Map<Integer, Set<String>>, Map<String, HashSet<Integer>>>(h_dist_map, ref_diff_positions);
     }
 }
