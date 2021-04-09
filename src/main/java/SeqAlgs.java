@@ -18,6 +18,7 @@ public class SeqAlgs {
         }
         return h_dist;
     }
+
     public static int hamDist(HashSet<Integer> var_pos, DNASequence s1, DNASequence s2) {
         int h_dist = 0;
         for (Integer i : var_pos) {
@@ -26,6 +27,24 @@ public class SeqAlgs {
             }
             if (!s1.getCompoundAt(i + 1).equals(s2.getCompoundAt(i + 1))) ++h_dist;
         }
+        return h_dist;
+    }
+
+    public static int hamDist(PhyloNode a, PhyloNode b) {
+        int h_dist = 0;
+        for (Integer i : a.ref_diffs) { 
+            if (b.ref_diffs.contains(i)) {
+                if (!(a.seq.getCompoundAt(i+1).equals(b.seq.getCompoundAt(i+1)))) {
+                    h_dist+=1;
+                }
+            } 
+            else {
+                h_dist +=1;
+            }
+        }
+        for (Integer i : b.ref_diffs) 
+            if (!(a.ref_diffs.contains(i)))
+                h_dist+=1;
         return h_dist;
     }
 

@@ -42,7 +42,6 @@ public class PhyloTree {
         int i = 1;
         for (Object distance_key : distance_keys) 
         {
-            System.out.println(String.format("Creating nodes with dist=%d to root. There are %d such sequences.", distance_key, h_dist_map.get(distance_key).size()));
             Set<String> seq_ids = h_dist_map.get(distance_key);
             for (String id : seq_ids) {
                 HashSet<Integer> ref_diffs = ref_diff_positions.get(id);
@@ -51,9 +50,10 @@ public class PhyloTree {
                                    Integer.parseInt(distance_key.toString()),
                                    ref_diffs));
             }
+            //System.out.println(String.format("Creating nodes with dist=%d to root. There are %d such sequences.", distance_key, h_dist_map.get(distance_key).size()));
         }
+        //last = root;
 
-        last = root;
         //Add all nodes to priority queue. 
         for(PhyloNode n : nodes)
         {
@@ -64,38 +64,32 @@ public class PhyloTree {
         //Build Tree
         PhyloNode v;
         while (!pq.isEmpty()) {
-
-            System.out.println(String.format("\nInserting sequence #%d/%d into graph with %d nodes", i, seqs.size() + 1, g.vertexSet().size())); ++i;
-            
             v = pq.poll(); 
-            System.out.println("Node: " + v);
-
             if(v.asInt() == root.asInt()) {
                 g.addVertex(v);
                 continue;
             } 
-
             // if chooseParents finds a parent with hamming distance 0, then it will collapse the node to that parent
             // otherwise it will find the best parent, set the parent of v, and return false.
             boolean node_is_collapsed = chooseParents(v, g, multiple_parents);
-
-            //if v is not collapsed, add v to tree, fill gaps from parent, update parents, add edges
             if(!node_is_collapsed) 
             { 
+                // last = v;
+                // System.out.println("Adding " + v.parents.size() + "edges.");
+
                 g.addVertex(v);
-                last = v;
-
-                System.out.println("Adding " + v.parents.size() + "edges.");
-
-                //add edges from all parents to v
+                // add edges from all parents to v
                 boolean fill = true;  //fill gaps only from first parent
                 for (PhyloNode parent: v.parents) 
                 {
                     addEdgeAndFillGaps(parent, v, fill);
                     fill = false;
                 }
-
             }
+            //Limiting output to once every thousand seqs
+            if (i < 1000 || i % 1000 == 0 || i >= (seqs.size()+1) - 1000) 
+                System.out.print(String.format("Inserting sequence #%d/%d into graph with %d nodes\r",i,seqs.size()+1, g.vertexSet().size()));
+            ++i;
         }
     }
 
@@ -112,22 +106,26 @@ public class PhyloTree {
                                          Graph<PhyloNode, PhyloEdge> g,
                                          boolean multiple_parents )
     {
-        System.out.println("Finding parents for node: " + x);
+        //System.out.println("Finding parents for node: " + x);
+        Object[] tree_array = g.vertexSet().toArray();
+        //int count = 0;
+        //System.out.println();
         int max_dist_ref = -99;
         for(int i = g.vertexSet().size()-1; i >= 0; i--) {
+            //count += 1;
 
-            PhyloNode candidate = (PhyloNode) g.vertexSet().toArray()[i];
+            PhyloNode candidate = (PhyloNode) tree_array[i];
             if (candidate.asInt() == x.asInt()) continue;
 
-            int distance_to_candidate = SeqAlgs.hamDistOnIntersection(x, candidate);
-            int distance_to_current_parent = SeqAlgs.hamDistOnIntersection(x.parents.getFirst(), x);
+            int distance_to_candidate = SeqAlgs.hamDist(x, candidate);
+            int distance_to_current_parent = SeqAlgs.hamDist(x.parents.getFirst(), x);
 
             if(distance_to_candidate == 0) {
                 collapseNodeToParent(x, candidate);
                 return true;
             }
 
-            //Constrains multi-parent search to same distance from ref
+            //Constrains multi-parent search to same distance from ref as first found parent
             if (max_dist_ref != -99 && candidate.dist_ref != max_dist_ref) {
                 return false;
             }
@@ -137,34 +135,41 @@ public class PhyloTree {
                     x.parents.clear();
                 x.parents.add(candidate); 
                 
-                if (!multiple_parents) 
+                if (!multiple_parents) {
+                    //System.out.println("found in:" + count + " steps");
                     return false;
+                }
                 else {
                     max_dist_ref = candidate.dist_ref;
                 }
             }
+            //System.out.print(String.format("Searching for parent #%d\r", count));
         }
-        System.out.println("No parent candidate found");
+        //System.out.println("No parent candidate found");
+        //System.out.println("found in:" + count + " steps");
         return false;
     }
+
+
+
 
 
     private void addEdgeAndFillGaps(PhyloNode source, PhyloNode target, boolean fill) 
     {
         if(fill) {
-            System.out.println("Filling gaps in node: " + target + " from " + source +  "...");
+            //System.out.println("Filling gaps in node: " + target + " from " + source +  "...");
             LinkedList<Integer> changedPositions = fillGapsFromParent(target, source);
         }
         Set<Pair<Integer, Character>> mutations = SeqAlgs.findMutations(var_pos, source.seq, target.seq);
-       System.out.println("Adding edge from " + source + " to " + target);
-        System.out.println(mutations.size() + " mutations.");
+        //System.out.println("Adding edge from " + source + " to " + target);
+        // System.out.println(mutations.size() + " mutations.");
         g.addEdge(source, target, new PhyloEdge(mutations));
     }
 
 
     private static void collapseNodeToParent(PhyloNode v, PhyloNode p) {
         // Instead of adding v to tree, we add its sequence ID to its parent p
-        System.out.println("Collapsing node: " + v + " to " + p);
+        //System.out.println("Collapsing node: " + v + " to " + p);
         String seq_id = v.seq_ids.stream().findFirst().get();
         DNASequence seq = v.getSeq();
         p.updateSeq(seq_id, seq);
@@ -195,7 +200,7 @@ public class PhyloTree {
             node.seq = new DNASequence(new String(node_seq));
         } catch (CompoundNotFoundException e) {e.printStackTrace();}
         
-        System.out.println(changedPositions.size() + " gap positions filled.");
+        //System.out.println(changedPositions.size() + " gap positions filled.");
         return changedPositions;
     }
 

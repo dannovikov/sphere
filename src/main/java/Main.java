@@ -38,6 +38,11 @@ public class Main implements Runnable {
 
     public void run() {
         try {
+            // Scanner wait = new Scanner(System.in);
+            // System.out.println("Hello.");
+            // System.out.println(wait.nextLine());
+
+
             final long startTime = System.currentTimeMillis();
 
             System.out.println("Reading seqs...");
@@ -67,8 +72,6 @@ public class Main implements Runnable {
             PhyloTree g = new PhyloTree(variable_positions);
 
             g.buildPhylo(h_dist_map, ref_diff_positions, seqs, ref.getKey(), ref.getValue(), multiple_parents);
-
-            System.out.println("Saving output...");
             
             g.exportEdgesCsv(eOutputFile);
             g.exportNodesCsv(vOutputFile);
@@ -76,7 +79,7 @@ public class Main implements Runnable {
             // g.exportDistanceMatrix(dmOutputFile);
 
             final long endTime = System.currentTimeMillis();
-            System.out.println("Complete. " + (endTime - startTime) + " milliseconds.");
+            System.out.println("\n\nComplete. " + (endTime - startTime) + " milliseconds.");
         }
         catch (IOException e) {
             e.printStackTrace();

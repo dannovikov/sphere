@@ -1,3 +1,4 @@
 Node,Seq
 0,ACTG
-1,GTCA
+1,GTTA
+2,GTCA
