@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!sphere/sphere.jar
 *.war
 *.nar
 *.ear

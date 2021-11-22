@@ -12,27 +12,27 @@ import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 /**
  * Created by Sergey Knyazev, continued by Daniel Novikov on June 16th, 2020
  */
-@CommandLine.Command(name = "spy", mixinStandardHelpOptions = true, version = "0.0")
+@CommandLine.Command(name = "sphere", mixinStandardHelpOptions = true, version = "0.0")
 public class Main implements Runnable {
     @CommandLine.Option(names = {"-i", "--inFile"}, description = "input fasta file",
             paramLabel = "FILE", required = true)
     private File inputFile;
-    @CommandLine.Option(names = {"-r", "--reference"}, description = "reference fasta file",
+    @CommandLine.Option(names = {"-r", "--reference"}, description = "reference fasta file containing root sequence",
             paramLabel = "FILE", required = true)
     private File referenceFile;
     @CommandLine.Option(names = {"-e", "--edgeOutFile"},
-            description = "output file with edges of character-based phylogeny as an edge list",
+            description = "output file for edges of phylogeny as an edge list",
             paramLabel = "FILE", required = true)
     private File eOutputFile;
     @CommandLine.Option(names = {"-v", "--vertexOutFile"},
-            description = "output file with strain ids assigned to vertices",
+            description = "output path for vertices and their strain IDs",
             paramLabel = "FILE", required = true)
     private File vOutputFile;
-    @CommandLine.Option(names = {"-mp", "--multipleParents"},
-            description = "Use this flag to allow multiple parents, otherwise don't include it", defaultValue="false")
-    private Boolean multiple_parents;
+//     @CommandLine.Option(names = {"-mp", "--multipleParents"},
+//             description = "Use this flag to allow multiple parents, otherwise don't include it", defaultValue="false")
+//     private Boolean multiple_parents;
     @CommandLine.Option(names = {"-s", "-seqsOutputFile"},
-            description = "output file with strain ids assigned to vertices",
+            description = "output fasta path for gap filled sequences",
             paramLabel = "FILE", required = true)
     private File seqsOutputFile;
 
@@ -71,7 +71,7 @@ public class Main implements Runnable {
 
             PhyloTree g = new PhyloTree(variable_positions);
 
-            g.buildPhylo(h_dist_map, ref_diff_positions, seqs, ref.getKey(), ref.getValue(), multiple_parents);
+            g.buildPhylo(h_dist_map, ref_diff_positions, seqs, ref.getKey(), ref.getValue(), false);
             
             g.exportEdgesCsv(eOutputFile);
             g.exportNodesCsv(vOutputFile);
