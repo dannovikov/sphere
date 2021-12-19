@@ -1,6 +1,6 @@
-#spy
+#sphere
 
-A phylogenetic tree inference algorithm for SARS-CoV-2 Genomes.
+A scalable phylogenetic tree inference algorithm for SARS-CoV-2 Genomes.
 
 java -jar sphere.jar 
 
