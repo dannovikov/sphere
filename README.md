@@ -9,7 +9,7 @@ java -jar sphere.jar
 This will show the help menu with all the necessary options and their descriptions.
 
 Run SPHERE with the following arguments:  
-  -i:  input path to aligned multiple sequence alignment file (fasta file) where sequences are from nucleotide alphabet {A,C,T,G} or "N" for missing positions/ambiguities.  
+  -i:  input path to aligned sequences (fasta file) where sequences are from nucleotide alphabet {A,C,T,G}, or "N" for missing positions/ambiguities.  
   -r:  input path to reference sequence with no missing positions/ambiguities ({A,C,T,G} only, no N's)  
   -e:  output path for edges (.csv)  
   -v:  output path for vertices (.csv)  
