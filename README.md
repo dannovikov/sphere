@@ -6,15 +6,15 @@ A scalable phylogenetic tree inference algorithm for SARS-CoV-2 sequences.
 java -jar sphere.jar 
 ```
 
-This will show the help menu with all the necessary options and their descriptions.
-
 Run SPHERE with the following arguments:  
+
+```
   -i:  input path to aligned sequences (fasta file) where sequences are from nucleotide alphabet {A,C,T,G}, or "N" for missing positions/ambiguities.  
   -r:  input path to reference sequence with no missing positions/ambiguities ({A,C,T,G} only, no N's)  
   -e:  output path for edges (.csv)  
   -v:  output path for vertices (.csv)  
   -s:  output path for gap-filled sequences (.fasta)  
-  
+```
 
 One way to run the sample files would be:
 
@@ -22,7 +22,7 @@ One way to run the sample files would be:
 java -jar sphere/sphere.jar -i sample_inputs/jan31.fasta -r sample_inputs/ref.fas -v vertices_out.csv -e edges_out.csv -s sequences_out.fasta 
 ```
 
-You can run SPHERE with the included precompiled jar in the "sphere" folder.  
+You can run SPHERE with the precompiled jar in the "sphere" folder.  
 
 Or, if you have Maven installed on your system, run 
 
