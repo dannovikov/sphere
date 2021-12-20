@@ -22,7 +22,9 @@ One way to run the sample files would be:
 java -jar sphere/sphere.jar -i sample_inputs/jan31.fasta -r sample_inputs/ref.fas -v vertices_out.csv -e edges_out.csv -s sequences_out.fasta 
 ```
 
-You can use the included precompiled jar in the sphere folder, or with Maven installed on your system, run 
+You can run SPHERE with the included precompiled jar in the "sphere" folder.  
+
+Or, if you have Maven installed on your system, run 
 
 ```mvn clean install```
 
