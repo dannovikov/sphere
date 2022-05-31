@@ -19,7 +19,7 @@ Run SPHERE with the following arguments:
 One way to run the sample files would be:
 
 ```
-java -jar sphere/sphere.jar -i sample_inputs/jan31.fasta -r sample_inputs/ref.fas -v vertices_out.csv -e edges_out.csv -s sequences_out.fasta 
+java -jar sphere/sphere.jar -i sample_inputs/jan31.fasta -r sample_inputs/ref.fas -v vertices_out.csv -e edges_out.csv -s sequences_out.csv 
 ```
 
 You can run SPHERE with the precompiled jar in the "sphere" folder.  
